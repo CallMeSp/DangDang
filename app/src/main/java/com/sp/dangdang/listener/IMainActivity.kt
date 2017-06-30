@@ -11,6 +11,6 @@ import java.util.ArrayList
 interface IMainActivity {
     fun showProgressBar()
     fun hideProgressBar()
-    fun updateUI(list: ArrayList<Bookitem>)
+    fun updateUI(list: ArrayList<Bookitem>,isfromWeb: Boolean)
     fun addMore(list: ArrayList<Bookitem>)
 }

@@ -23,8 +23,13 @@ import com.sp.dangdang.view.SwipeRefreshView
 import java.util.ArrayList
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.UI
-import org.jetbrains.anko.onUiThread
 import org.jetbrains.anko.startActivity
+import android.net.NetworkInfo
+import android.net.ConnectivityManager
+import android.util.Log
+import com.sp.dangdang.utils.DbHelper
+import org.jetbrains.anko.custom.onUiThread
+
 
 class MainActivity : AppCompatActivity(), IMainActivity {
 
@@ -41,6 +46,8 @@ class MainActivity : AppCompatActivity(), IMainActivity {
     private var snackbar: Snackbar? = null
 
     private var context: Context? = null
+
+    private val mHelper:DbHelper=DbHelper(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,9 +70,15 @@ class MainActivity : AppCompatActivity(), IMainActivity {
         to_search!!.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
                 bookname = query
-                mainpresenter.getBookList(query, currentpage)
                 to_search!!.setIconifiedByDefault(false)
                 to_search!!.clearFocus()
+                Log.e(TAG,mHelper.IshaveTB(bookname).toString())
+                if(mHelper.IshaveTB(query)){
+                    getListFromDB(query)
+                    Log.e(TAG,"query from DB")
+                }else{
+                    mainpresenter.getBookList(query, currentpage)
+                }
                 return false
             }
 
@@ -90,27 +103,51 @@ class MainActivity : AppCompatActivity(), IMainActivity {
     }
 
     override fun showProgressBar() {
-        onUiThread { progress_bar!!.visibility = View.VISIBLE }
-    }
-    override fun hideProgressBar() {
-        onUiThread{ progress_bar!!.visibility = View.GONE }
+        runOnUiThread { progress_bar!!.visibility = View.VISIBLE }
     }
 
-    override fun updateUI(list: ArrayList<Bookitem>) {
-        onUiThread { swipe_loadmore.isRefreshing=false
-            bookitems.clear()
-            bookitems.addAll(list)
-            adapter!!.notifyDataSetChanged() }
+    override fun hideProgressBar() {
+        runOnUiThread{ progress_bar!!.visibility = View.GONE }
+    }
+
+    override fun updateUI(list: ArrayList<Bookitem>,isfromWeb: Boolean) {
+        if (isfromWeb){
+            runOnUiThread { swipe_loadmore.isRefreshing=false
+                bookitems.clear()
+                bookitems.addAll(list)
+                adapter!!.notifyDataSetChanged()
+                if (mHelper.IshaveTB(bookname)){
+                    mHelper.dropTable(bookname)
+                }
+                mHelper.insertNewTable(bookname,list)}
+        }else{
+            runOnUiThread { swipe_loadmore.isRefreshing=false
+                bookitems.clear()
+                bookitems.addAll(list)
+                adapter!!.notifyDataSetChanged()
+                }
+        }
     }
 
     override fun addMore(list: ArrayList<Bookitem>) {
-        onUiThread{
+        runOnUiThread{
             swipe_loadmore.isRefreshing=false
             swipe_loadmore!!.setCondition2(false)
             snackbar!!.dismiss()
             bookitems.addAll(list)
             adapter!!.notifyDataSetChanged()
             swipe_loadmore!!.setLoading(false)
+            mHelper.addToOldTable(bookname,list)
+        }
+    }
+
+    fun getListFromDB(bookname:String){
+        var list=ArrayList<Bookitem>()
+        list.addAll(mHelper.getListFormDb(bookname))
+        updateUI(list,false)
+        Log.e(TAG,"list.size:"+list.size)
+        for (item:Bookitem in list){
+            Log.e(TAG,item.name)
         }
     }
 

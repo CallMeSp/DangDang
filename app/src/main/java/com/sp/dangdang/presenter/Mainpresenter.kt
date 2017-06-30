@@ -31,7 +31,7 @@ class Mainpresenter(var iMainActivity: IMainActivity) {
     }
 
     fun updateUI(list: ArrayList<Bookitem>) {
-        iMainActivity.updateUI(list)
+        iMainActivity.updateUI(list,true)
     }
 
     fun showPB() {

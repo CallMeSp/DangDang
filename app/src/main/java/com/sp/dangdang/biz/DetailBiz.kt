@@ -38,6 +38,8 @@ class DetailBiz(private val detailpresenter: Detailpresenter) {
                     override fun onNext(t: String?) {
                         val detailurl = url
                         Log.e(TAG, "url?:" + t)
+
+
                         /*val wc = WebClient(BrowserVersion.CHROME)
                         wc.options.isUseInsecureSSL = true
                         wc.options.isJavaScriptEnabled = true // 启用JS解释器，默认为true

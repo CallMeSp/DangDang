@@ -8,7 +8,6 @@ import com.bumptech.glide.Glide
 import com.sp.dangdang.listener.IDetailActivity
 import com.sp.dangdang.presenter.Detailpresenter
 import kotlinx.android.synthetic.main.activity_detail.*
-import org.jetbrains.anko.onUiThread
 
 class DetailActivity : Activity() ,IDetailActivity{
 
@@ -43,7 +42,7 @@ class DetailActivity : Activity() ,IDetailActivity{
     }
 
     override fun setProContent(content: String) {
-        onUiThread {
+        runOnUiThread {
             if(content.length>0){
                 card_content.visibility=View.VISIBLE
                 txt_procontent.text=content
