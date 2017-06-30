@@ -24,9 +24,9 @@ class SwipeRefreshView(context: Context, attrs: AttributeSet) : SwipeRefreshLayo
 
     private var recyclerview: RecyclerView? = null
 
-    private var mOnLoadListener: OnLoadListener? = null
-
     @Volatile private var condition2: Boolean = false
+
+    private var MonLoadListener:()->Unit={}
     /**
      * 正在加载状态
      */
@@ -135,10 +135,10 @@ class SwipeRefreshView(context: Context, attrs: AttributeSet) : SwipeRefreshLayo
      */
     private fun loadData() {
         println("加载数据...")
-        if (mOnLoadListener != null) {
+        if (MonLoadListener != null) {
             // 设置加载状态，让布局显示出来
             setLoading(true)
-            mOnLoadListener!!.onLoad()
+            MonLoadListener()
         }
     }
 
@@ -166,7 +166,7 @@ class SwipeRefreshView(context: Context, attrs: AttributeSet) : SwipeRefreshLayo
 
 
     /**
-     * 设置ListView的滑动监听
+     * 设置RecyclerView的滑动监听
      */
     private fun setRecyclerViewOnScroll() {
 
@@ -191,12 +191,9 @@ class SwipeRefreshView(context: Context, attrs: AttributeSet) : SwipeRefreshLayo
      * 上拉加载的接口回调
      */
 
-    interface OnLoadListener {
-        fun onLoad()
-    }
 
-    fun setOnLoadListener(listener: OnLoadListener){
-        mOnLoadListener=listener
+    fun setMOnLoadListener(listener:()->Unit){
+        MonLoadListener=listener
     }
 
     companion object {

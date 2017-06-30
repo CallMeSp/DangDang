@@ -1,5 +1,6 @@
 package com.sp.dangdang.biz
 
+import android.util.Log
 import com.sp.dangdang.model.Bookitem
 import com.sp.dangdang.presenter.Mainpresenter
 
@@ -16,6 +17,8 @@ import io.reactivex.schedulers.Schedulers
  */
 
 class MainBiz(private val mainpresenter: Mainpresenter) {
+
+    private val TAG:String="MainBiz"
     fun getBookListByNameAndPage(bookname: String, page: Int, ismore: Boolean) {
         Observable.just(bookname)
                 .observeOn(Schedulers.newThread())
@@ -23,6 +26,7 @@ class MainBiz(private val mainpresenter: Mainpresenter) {
                     mainpresenter.showPB()
                     val bookitemArrayList = ArrayList<Bookitem>()
                     val doc = Jsoup.connect("http://search.dangdang.com/?key=$s&act=input&page_index=$page").get()
+                    Log.e("..",doc.toString())
                     val elements = doc.select("ul.bigimg").select("li")
                     for (element in elements) {
                         val name = element.select("a").attr("title")
@@ -35,7 +39,8 @@ class MainBiz(private val mainpresenter: Mainpresenter) {
                         val price = element.select("p.price").select("span.search_now_price").text()
                         val author = element.select("p.search_book_author").select("span")[0].select("a").attr("title")
                         val publisher = element.select("p.search_book_author").select("span")[2].select("a").text()
-                        val bookitem = Bookitem(name ,detail,price,author,imgurl,publisher)
+                        val bookitem = Bookitem(name ,detail,price,author,imgurl,publisher,detailurl)
+                        Log.e(TAG,"detailurl:"+detailurl)
                         bookitemArrayList.add(bookitem)
                     }
                     bookitemArrayList

@@ -18,7 +18,7 @@ import java.util.ArrayList
  * Created by Administrator on 2017/6/23.
  */
 
-class MainAdapter(private val context: Context, list: ArrayList<Bookitem>) : RecyclerView.Adapter<MainAdapter.MyViewHolder>() {
+class MainAdapter(private val context: Context, list: ArrayList<Bookitem>,val itemclickListener:(Bookitem)->Unit) : RecyclerView.Adapter<MainAdapter.MyViewHolder>() {
 
     class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var txt_name: TextView
@@ -38,7 +38,6 @@ class MainAdapter(private val context: Context, list: ArrayList<Bookitem>) : Rec
 
     private val inflater: LayoutInflater
 
-    private var listener: onClickListener? = null
 
     init {
         this.bookitemArrayList = list
@@ -62,14 +61,6 @@ class MainAdapter(private val context: Context, list: ArrayList<Bookitem>) : Rec
         Glide.with(context)
                 .load(bookitemArrayList[position].imgurl)
                 .into(holder.imageView)
-        holder.itemView.setOnClickListener { listener!!.onClick(bookitemArrayList[position].detail) }
-    }
-
-    public interface onClickListener {
-        fun onClick(detail: String)
-    }
-
-    fun setOnClickListener(listener: onClickListener) {
-        this.listener = listener
+        holder.itemView.setOnClickListener { itemclickListener(bookitemArrayList[position]) }
     }
 }

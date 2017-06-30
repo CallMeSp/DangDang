@@ -14,4 +14,6 @@ class Bookitem (var name: String,
 
                 var imgurl: String,
 
-                var publisher: String)
+                var publisher: String,
+
+                var detailurl:String)
